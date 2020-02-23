@@ -9,7 +9,7 @@ def get_psnr_loss(decoded_imgs, true_data) :
 	return psnr
 
 @tf.function
-def train_step(encoding_model, decoding_model, optimizer_enc, optimizer_dec, batch_data) :
+def train_step(encoding_model, decoding_model, optimizer, batch_data) :
 	with tf.GradientTape() as tape:
 		batch_imgs = batch_data[0]
 		true_data = batch_data[1:]
@@ -31,11 +31,9 @@ def train() :
 	decoding_model = get_decoding_model()
 	decoding_model.summary()
 
-
-	optimizer_enc = tf.keras.optimizers.Adam(config.LEARNING_RATE)
 	optimizer_dec = tf.keras.optimizers.Adam(config.LEARNING_RATE)
 	frame_data_generator = FrameDataGenerator()
-	ckpt_enc = tf.train.Checkpoint(step=tf.Variable(1), optimizer=optimizer_enc, net=encoding_model)
+	ckpt_enc = tf.train.Checkpoint(step=tf.Variable(1), optimizer=optimizer_dec, net=encoding_model)
 	ckpt_dec = tf.train.Checkpoint(step=tf.Variable(1), optimizer=optimizer_dec, net=decoding_model)
 	manager_enc = tf.train.CheckpointManager(ckpt_enc, ckpt_enc_path, max_to_keep=3)
 	manager_dec = tf.train.CheckpointManager(ckpt_dec, ckpt_dec_path, max_to_keep=3)
@@ -52,7 +50,7 @@ def train() :
 
 	for epoch in range(config.NUM_EPOCHS) :
 		for step, batch_data in enumerate(frame_data_generator) :
-			total_loss = train_step(encoding_model, decoding_model, optimizer_enc, optimizer_dec, batch_data)
+			total_loss = train_step(encoding_model, decoding_model, optimizer, batch_data)
 			print("total_loss",total_loss)
 			ckpt_enc.step.assign_add(1)
 			ckpt_dec.step.assign_add(1)
