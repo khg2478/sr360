@@ -6,7 +6,7 @@ import config
 
 class FrameDataGenerator(keras.utils.Sequence):
     def __init__(self, batch_size=config.BATCH_SIZE, img_size=(config.IMAGE_HEIGHT,config.IMAGE_WIDTH), ratio=1, shuffle=True):
-        self.base_path = "/Users/hangilkang/work/data/super_resolution/nas/frames"
+        self.base_path = config.DATA_PATH
         self.get_dataset()
 
         self.batch_size = batch_size
@@ -54,8 +54,8 @@ class FrameDataGenerator(keras.utils.Sequence):
             if (file.endswith(".jpg")) :
                 self.list_dataset.append(file)
 
-frame_data_generator = FrameDataGenerator()
-X, y = frame_data_generator.__getitem__(0)
-print("X.shape",X.shape)
+# frame_data_generator = FrameDataGenerator()
+# X, y = frame_data_generator.__getitem__(0)
+# print("X.shape",X.shape)
 
 
